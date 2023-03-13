@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go-article-codelite/article"
 	"go-article-codelite/category"
 	"log"
 
@@ -16,5 +17,6 @@ func main() {
 	}
 
 	db.AutoMigrate(&category.Category{})
+	db.AutoMigrate(&article.Article{})
 
 }
