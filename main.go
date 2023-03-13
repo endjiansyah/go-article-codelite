@@ -1,6 +1,7 @@
 package main
 
 import (
+	"go-article-codelite/article"
 	"go-article-codelite/category"
 	"go-article-codelite/handler"
 	"log"
@@ -18,11 +19,15 @@ func main() {
 	}
 
 	db.AutoMigrate(&category.Category{})
-	// db.AutoMigrate(&article.Article{})
+	db.AutoMigrate(&article.Article{})
 
-	categoryRepo := category.NewRepository(db) // panggil repository category (mirip model di CI)
+	categoryRepo := category.NewRepository(db)
 	categoryService := category.NewService(categoryRepo)
 	categoryHandler := handler.NewCategoryHandler(categoryService)
+
+	articleRepo := article.NewRepository(db)
+	articleService := article.NewService(articleRepo)
+	articleHandler := handler.NewArticleHandler(articleService)
 
 	router := gin.Default()
 	router.GET("/category", categoryHandler.ListCategory)
@@ -30,5 +35,11 @@ func main() {
 	router.POST("/category", categoryHandler.CategoryStore)
 	router.PUT("/category/:id", categoryHandler.CategoryUpdate)
 	router.DELETE("/category/:id", categoryHandler.CategoryDelete)
+
+	router.GET("/article", articleHandler.ListArticle)
+	router.GET("/article/:id", articleHandler.ArticleByID)
+	router.POST("/article", articleHandler.ArticleStore)
+	router.PUT("/article/:id", articleHandler.ArticleUpdate)
+	router.DELETE("/article/:id", articleHandler.ArticleDelete)
 	router.Run()
 }

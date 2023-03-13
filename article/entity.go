@@ -1,12 +1,12 @@
 package article
 
-// import "time"
+import "time"
 
-// type Article struct {
-// 	ID        int
-// 	Title     string
-// 	Media     string
-// 	Content   string
-// 	CreatedAt time.Time
-// 	UpdatedAt time.Time
-// }
+type Article struct {
+	ID        int
+	Title     string
+	Media     string
+	Content   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
