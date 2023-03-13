@@ -190,6 +190,13 @@ func (handler *articleHandler) ArticleDelete(c *gin.Context) {
 			"message": "data tidak ditemukan",
 		})
 	} else {
+		if cst.Media != "" {
+			err := os.Remove(cst.Media)
+			if err != nil {
+				fmt.Println("Error deleting file:", err)
+				return
+			}
+		}
 		cst, err := handler.articleService.Delete(int(id))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
