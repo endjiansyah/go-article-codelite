@@ -91,8 +91,44 @@ func (handler *categoryHandler) CategoryStore(c *gin.Context) {
 		"status":  true,
 		"message": "Data tersimpan",
 		"data":    category,
+	})
+}
 
-		// "email": bioinput.Email,
+func (handler *categoryHandler) CategoryUpdate(c *gin.Context) {
+
+	var categoryRequest category.CategoryUpdateRequest
+
+	err := c.Bind(&categoryRequest)
+	if err != nil {
+
+		listpesaneror := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
+			listpesaneror = append(listpesaneror, pesaneror)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": listpesaneror,
+		})
+		return
+	}
+
+	idnya := c.Param("id")
+	id, _ := strconv.Atoi(idnya)
+
+	category, err := handler.categoryService.Update(id, categoryRequest)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  true,
+		"message": "Data tersimpan",
+		"data":    category,
 	})
 }
 

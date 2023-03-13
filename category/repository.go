@@ -6,6 +6,7 @@ type CategoryRepo interface {
 	GetAll() ([]Category, error)
 	GetById(ID int) (Category, error)
 	Create(category Category) (Category, error)
+	Update(category Category) (Category, error)
 }
 
 type repository struct {
@@ -23,7 +24,7 @@ func (repo *repository) GetAll() ([]Category, error) {
 	return categories, err
 }
 
-func (repo *repository) GetById(ID int) (Category, error) { //getById
+func (repo *repository) GetById(ID int) (Category, error) {
 	var category Category
 
 	err := repo.db.Find(&category, ID).Error
@@ -32,5 +33,10 @@ func (repo *repository) GetById(ID int) (Category, error) { //getById
 
 func (repo *repository) Create(category Category) (Category, error) {
 	err := repo.db.Create(&category).Error
+	return category, err
+}
+
+func (repo *repository) Update(category Category) (Category, error) {
+	err := repo.db.Save(&category).Error
 	return category, err
 }

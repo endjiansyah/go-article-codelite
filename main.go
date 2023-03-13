@@ -28,5 +28,6 @@ func main() {
 	router.GET("/category", categoryHandler.ListCategory)
 	router.GET("/category/:id", categoryHandler.CategoryByID)
 	router.POST("/category", categoryHandler.CategoryStore)
+	router.PUT("/category/:id", categoryHandler.CategoryUpdate)
 	router.Run()
 }

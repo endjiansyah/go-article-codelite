@@ -3,7 +3,8 @@ package category
 type Service interface {
 	GetAll() ([]Category, error)
 	GetById(ID int) (Category, error)
-	Create(customerReq CategoryRequest) (Category, error)
+	Create(categoryReq CategoryRequest) (Category, error)
+	Update(ID int, categoryReq CategoryUpdateRequest) (Category, error)
 }
 
 type service struct {
@@ -31,5 +32,18 @@ func (s *service) Create(categoryReq CategoryRequest) (Category, error) {
 		Description: categoryReq.Description,
 	}
 	category, err := s.repository.Create(payload)
+	return category, err
+}
+
+func (s *service) Update(ID int, categoryReq CategoryUpdateRequest) (Category, error) {
+	cst, _ := s.repository.GetById(ID)
+
+	if categoryReq.Name != "" {
+		cst.Name = categoryReq.Name
+	}
+	if categoryReq.Description != "" {
+		cst.Description = categoryReq.Description
+	}
+	category, err := s.repository.Update(cst)
 	return category, err
 }
