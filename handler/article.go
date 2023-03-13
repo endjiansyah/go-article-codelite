@@ -5,12 +5,12 @@ import (
 	"go-article-codelite/article"
 	"math/rand"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 type articleHandler struct {
@@ -126,23 +126,33 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 			"message": "data tidak ditemukan",
 		})
 	} else {
+		Title := c.PostForm("Title")
+		Content := c.PostForm("Content")
+		Media, errmedia := c.FormFile("Media")
+		Filename := ""
 
-		var articleRequest article.ArticleUpdateRequest
+		if errmedia == nil {
+			rand.Seed(time.Now().UnixNano())
+			randNum := rand.Intn(100000)
+			fileName := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
 
-		err := c.Bind(&articleRequest)
-		if err != nil {
-
-			listpesaneror := []string{}
-			for _, e := range err.(validator.ValidationErrors) {
-				pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
-				listpesaneror = append(listpesaneror, pesaneror)
+			Filename = fmt.Sprintf("uploads/codelite_%s", fileName)
+			if err := c.SaveUploadedFile(Media, Filename); err != nil {
+				c.JSON(500, gin.H{
+					"error": "Failed to save media",
+				})
+				return
+			} else {
+				err := os.Remove(cst.Media)
+				if err != nil {
+					fmt.Println("Error deleting file:", err)
+					return
+				}
 			}
 
-			c.JSON(http.StatusBadRequest, gin.H{
-				"errors": listpesaneror,
-			})
-			return
 		}
+
+		articleRequest := article.ArticleUpdateRequest{Title: Title, Media: Filename, Content: Content}
 
 		article, err := handler.articleService.Update(id, articleRequest)
 
