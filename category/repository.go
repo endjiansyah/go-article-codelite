@@ -7,6 +7,7 @@ type CategoryRepo interface {
 	GetById(ID int) (Category, error)
 	Create(category Category) (Category, error)
 	Update(category Category) (Category, error)
+	Delete(category Category) (Category, error)
 }
 
 type repository struct {
@@ -38,5 +39,10 @@ func (repo *repository) Create(category Category) (Category, error) {
 
 func (repo *repository) Update(category Category) (Category, error) {
 	err := repo.db.Save(&category).Error
+	return category, err
+}
+
+func (repo *repository) Delete(category Category) (Category, error) {
+	err := repo.db.Delete(&category).Error
 	return category, err
 }

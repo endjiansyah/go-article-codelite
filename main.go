@@ -29,5 +29,6 @@ func main() {
 	router.GET("/category/:id", categoryHandler.CategoryByID)
 	router.POST("/category", categoryHandler.CategoryStore)
 	router.PUT("/category/:id", categoryHandler.CategoryUpdate)
+	router.DELETE("/category/:id", categoryHandler.CategoryDelete)
 	router.Run()
 }

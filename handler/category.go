@@ -96,40 +96,91 @@ func (handler *categoryHandler) CategoryStore(c *gin.Context) {
 
 func (handler *categoryHandler) CategoryUpdate(c *gin.Context) {
 
-	var categoryRequest category.CategoryUpdateRequest
-
-	err := c.Bind(&categoryRequest)
-	if err != nil {
-
-		listpesaneror := []string{}
-		for _, e := range err.(validator.ValidationErrors) {
-			pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
-			listpesaneror = append(listpesaneror, pesaneror)
-		}
-
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errors": listpesaneror,
-		})
-		return
-	}
-
 	idnya := c.Param("id")
 	id, _ := strconv.Atoi(idnya)
-
-	category, err := handler.categoryService.Update(id, categoryRequest)
+	cst, err := handler.categoryService.GetById(int(id))
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
+			"status": false,
 			"errors": err,
 		})
 		return
+	} else if cst.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  false,
+			"message": "data tidak ditemukan",
+		})
+	} else {
+
+		var categoryRequest category.CategoryUpdateRequest
+
+		err := c.Bind(&categoryRequest)
+		if err != nil {
+
+			listpesaneror := []string{}
+			for _, e := range err.(validator.ValidationErrors) {
+				pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
+				listpesaneror = append(listpesaneror, pesaneror)
+			}
+
+			c.JSON(http.StatusBadRequest, gin.H{
+				"errors": listpesaneror,
+			})
+			return
+		}
+
+		category, err := handler.categoryService.Update(id, categoryRequest)
+
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"errors": err,
+			})
+			return
+		}
+
+		c.JSON(http.StatusOK, gin.H{
+			"status":  true,
+			"message": "Data tersimpan",
+			"data":    category,
+		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"status":  true,
-		"message": "Data tersimpan",
-		"data":    category,
-	})
+}
+
+func (handler *categoryHandler) CategoryDelete(c *gin.Context) {
+	idnya := c.Param("id")
+	id, _ := strconv.Atoi(idnya)
+
+	cst, err := handler.categoryService.GetById(int(id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": false,
+			"errors": err,
+		})
+		return
+	} else if cst.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  false,
+			"message": "data tidak ditemukan",
+		})
+	} else {
+		cst, err := handler.categoryService.Delete(int(id))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"status": false,
+				"errors": err,
+			})
+			return
+		}
+		categoryResponse := responseCategory(cst)
+		c.JSON(http.StatusOK, gin.H{
+			"status":  true,
+			"message": "Hapus Category",
+			"data":    categoryResponse,
+		})
+	}
 }
 
 func responseCategory(cst category.Category) category.CategoryResponse {

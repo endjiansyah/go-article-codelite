@@ -5,6 +5,7 @@ type Service interface {
 	GetById(ID int) (Category, error)
 	Create(categoryReq CategoryRequest) (Category, error)
 	Update(ID int, categoryReq CategoryUpdateRequest) (Category, error)
+	Delete(ID int) (Category, error)
 }
 
 type service struct {
@@ -45,5 +46,12 @@ func (s *service) Update(ID int, categoryReq CategoryUpdateRequest) (Category, e
 		cst.Description = categoryReq.Description
 	}
 	category, err := s.repository.Update(cst)
+	return category, err
+}
+
+func (s *service) Delete(ID int) (Category, error) {
+	cst, _ := s.repository.GetById(ID)
+
+	category, err := s.repository.Delete(cst)
 	return category, err
 }
