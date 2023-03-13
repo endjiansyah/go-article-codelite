@@ -70,27 +70,23 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 	Title := c.PostForm("Title")
 	Content := c.PostForm("Content")
 	Media, err := c.FormFile("Media")
+	Filename := ""
 
-	if err != nil {
-		c.JSON(400, gin.H{
-			"error": "Failed to upload file",
-		})
-		return
+	if err == nil {
+		rand.Seed(time.Now().UnixNano())
+		randNum := rand.Intn(100000)
+		Filename = strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
+
+		filename := fmt.Sprintf("uploads/codelite_%s", Filename)
+		if err := c.SaveUploadedFile(Media, filename); err != nil {
+			c.JSON(500, gin.H{
+				"error": "Failed to save media",
+			})
+			return
+		}
+
 	}
-
-	rand.Seed(time.Now().UnixNano())
-	randNum := rand.Intn(100000)
-	fileName := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
-
-	filename := fmt.Sprintf("uploads/codelite_%s", fileName)
-	if err := c.SaveUploadedFile(Media, filename); err != nil {
-		c.JSON(500, gin.H{
-			"error": "Failed to save media",
-		})
-		return
-	}
-
-	articleRequest := article.ArticleRequest{Title: Title, Media: filename, Content: Content}
+	articleRequest := article.ArticleRequest{Title: Title, Media: Filename, Content: Content}
 
 	article, err := handler.articleService.Create(articleRequest)
 
