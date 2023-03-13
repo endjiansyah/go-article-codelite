@@ -3,8 +3,11 @@ package handler
 import (
 	"fmt"
 	"go-article-codelite/article"
+	"math/rand"
 	"net/http"
+	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -63,21 +66,32 @@ func (handler *articleHandler) ArticleByID(c *gin.Context) {
 }
 
 func (handler *articleHandler) ArticleStore(c *gin.Context) {
-	var articleRequest article.ArticleRequest
-	err := c.Bind(&articleRequest)
+
+	Title := c.PostForm("Title")
+	Content := c.PostForm("Content")
+	Media, err := c.FormFile("Media")
+
 	if err != nil {
-
-		listpesaneror := []string{}
-		for _, e := range err.(validator.ValidationErrors) {
-			pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
-			listpesaneror = append(listpesaneror, pesaneror)
-		}
-
-		c.JSON(http.StatusBadRequest, gin.H{
-			"errors": listpesaneror,
+		c.JSON(400, gin.H{
+			"error": "Failed to upload file",
 		})
 		return
 	}
+
+	rand.Seed(time.Now().UnixNano())
+	randNum := rand.Intn(100000)
+	fileName := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
+
+	filename := fmt.Sprintf("uploads/codelite_%s", fileName)
+	if err := c.SaveUploadedFile(Media, filename); err != nil {
+		c.JSON(500, gin.H{
+			"error": "Failed to save media",
+		})
+		return
+	}
+
+	articleRequest := article.ArticleRequest{Title: Title, Media: filename, Content: Content}
+
 	article, err := handler.articleService.Create(articleRequest)
 
 	if err != nil {
