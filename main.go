@@ -26,5 +26,6 @@ func main() {
 
 	router := gin.Default()
 	router.GET("/category", categoryHandler.ListCategory)
+	router.GET("/category/:id", categoryHandler.CategoryByID)
 	router.Run()
 }
