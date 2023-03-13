@@ -1,11 +1,13 @@
 package handler
 
 import (
+	"fmt"
 	"go-article-codelite/category"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 )
 
 type categoryHandler struct {
@@ -58,6 +60,40 @@ func (handler *categoryHandler) CategoryByID(c *gin.Context) {
 			"data":    categoryResponse,
 		})
 	}
+}
+
+func (handler *categoryHandler) CategoryStore(c *gin.Context) {
+	var categoryRequest category.CategoryRequest
+	err := c.Bind(&categoryRequest)
+	if err != nil {
+
+		listpesaneror := []string{}
+		for _, e := range err.(validator.ValidationErrors) {
+			pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
+			listpesaneror = append(listpesaneror, pesaneror)
+		}
+
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": listpesaneror,
+		})
+		return
+	}
+	category, err := handler.categoryService.Create(categoryRequest)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  true,
+		"message": "Data tersimpan",
+		"data":    category,
+
+		// "email": bioinput.Email,
+	})
 }
 
 func responseCategory(cst category.Category) category.CategoryResponse {
