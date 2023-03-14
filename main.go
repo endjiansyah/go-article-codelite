@@ -41,5 +41,6 @@ func main() {
 	router.POST("/article", articleHandler.ArticleStore)
 	router.PUT("/article/:id", articleHandler.ArticleUpdate)
 	router.DELETE("/article/:id", articleHandler.ArticleDelete)
+	router.Static("/uploads/", "./uploads")
 	router.Run()
 }

@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -97,19 +98,30 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 	Filename := ""
 	Media, err := c.FormFile("Media")
 	if err == nil {
-		rand.Seed(time.Now().UnixNano())
-		randNum := rand.Intn(100000)
-		Filename = strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
+		mimetype := Media.Header.Get("Content-Type")
+		mime := strings.Split(mimetype, "/")
 
-		filename := fmt.Sprintf("uploads/codelite_%s", Filename)
-		if err := c.SaveUploadedFile(Media, filename); err != nil {
-			c.JSON(500, gin.H{
-				"error": "Failed to save media",
+		if mime[0] != "image" && mime[0] != "video" && mime[0] != "audio" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "your uploaded file is " + mime[0] + ", the allowed file is audio, video,& image",
 			})
 			return
 		}
 
+		rand.Seed(time.Now().UnixNano())
+		randNum := rand.Intn(100000)
+		fileName := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
+		Filename = fmt.Sprintf("uploads/%s/codelite_%s", mime[0], fileName)
+		if err := c.SaveUploadedFile(Media, Filename); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Failed to save media",
+			})
+			return
+		}
+		Filename = fmt.Sprintf("%s/%s", c.Request.Host, Filename)
+
 	}
+
 	articleRequest := article.ArticleRequest{Title: Title, Media: Filename, Content: Content, CategoryID: int(categoryID)}
 	article, err := handler.articleService.Create(articleRequest)
 
@@ -158,22 +170,32 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 
 	Media, errmedia := c.FormFile("Media")
 	if errmedia == nil {
+		mimetype := Media.Header.Get("Content-Type")
+		mime := strings.Split(mimetype, "/")
+
+		if mime[0] != "image" && mime[0] != "video" && mime[0] != "audio" {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "your uploaded file is " + mime[0] + ", the allowed file is audio, video,& image",
+			})
+			return
+		}
+
 		rand.Seed(time.Now().UnixNano())
 		randNum := rand.Intn(100000)
 		fileName := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
 
-		Filename = fmt.Sprintf("uploads/codelite_%s", fileName)
+		Filename = fmt.Sprintf("uploads/%s/codelite_%s", mime[0], fileName)
 		if err := c.SaveUploadedFile(Media, Filename); err != nil {
-			c.JSON(500, gin.H{
+			c.JSON(http.StatusBadRequest, gin.H{
 				"error": "Failed to save media",
 			})
 			return
-		} else {
-			if cst.Media != "" {
-				err := os.Remove(cst.Media)
-				if err != nil {
-					fmt.Println("Error deleting file:", err)
-				}
+		}
+		Filename = fmt.Sprintf("%s/%s", c.Request.Host, Filename)
+		if cst.Media != "" {
+			err := os.Remove(cst.Media)
+			if err != nil {
+				fmt.Println("Error deleting file:", err)
 			}
 		}
 
