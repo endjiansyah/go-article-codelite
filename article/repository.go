@@ -24,7 +24,7 @@ func (repo *repository) GetAll(Category int, Page int, Limit int) ([]Article, er
 	var articles []Article
 
 	Offset := (Page - 1) * Limit
-	if Offset <= 1 {
+	if Offset <= 0 {
 		Offset = 0
 	}
 	if Offset == 0 && Limit <= 0 {
