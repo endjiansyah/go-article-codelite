@@ -29,9 +29,10 @@ func (s *service) GetById(ID int) (Article, error) {
 func (s *service) Create(articleReq ArticleRequest) (Article, error) {
 
 	payload := Article{
-		Title:   articleReq.Title,
-		Content: articleReq.Content,
-		Media:   articleReq.Media,
+		Title:      articleReq.Title,
+		Content:    articleReq.Content,
+		Media:      articleReq.Media,
+		CategoryID: articleReq.CategoryID,
 	}
 	article, err := s.repository.Create(payload)
 	return article, err
@@ -48,6 +49,9 @@ func (s *service) Update(ID int, articleReq ArticleUpdateRequest) (Article, erro
 	}
 	if articleReq.Media != "" {
 		cst.Media = articleReq.Media
+	}
+	if articleReq.CategoryID != 0 {
+		cst.CategoryID = articleReq.CategoryID
 	}
 	article, err := s.repository.Update(cst)
 	return article, err
