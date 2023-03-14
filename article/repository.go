@@ -5,7 +5,7 @@ import (
 )
 
 type ArticleRepo interface {
-	GetAll() ([]Article, error)
+	GetAll(Category int, Page int, Limit int) ([]Article, error)
 	GetById(ID int) (Article, error)
 	Create(article Article) (Article, error)
 	Update(article Article) (Article, error)
@@ -20,11 +20,23 @@ func NewRepository(db *gorm.DB) *repository {
 	return &repository{db}
 }
 
-func (repo *repository) GetAll() ([]Article, error) {
+func (repo *repository) GetAll(Category int, Page int, Limit int) ([]Article, error) {
 	var articles []Article
 
-	err := repo.db.Find(&articles).Error
-	return articles, err
+	Offset := (Page - 1) * Limit
+	if Offset <= 1 {
+		Offset = 0
+	}
+	if Offset == 0 && Limit <= 0 {
+		Limit = -1
+	}
+	if Category <= 0 {
+		err := repo.db.Limit(Limit).Offset(Offset).Find(&articles).Error
+		return articles, err
+	} else {
+		err := repo.db.Limit(Limit).Offset(Offset).Find(&articles, "category_id = ?", Category).Error
+		return articles, err
+	}
 }
 
 func (repo *repository) GetById(ID int) (Article, error) {

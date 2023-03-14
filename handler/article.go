@@ -22,7 +22,25 @@ func NewArticleHandler(articleService article.Service) *articleHandler {
 }
 
 func (handler *articleHandler) ListArticle(c *gin.Context) {
-	articles, err := handler.articleService.GetAll()
+	categorynya := c.Request.URL.Query().Get("category")
+	pagenya := c.Request.URL.Query().Get("page")
+	limitnya := c.Request.URL.Query().Get("limit")
+
+	Category, err := strconv.Atoi(categorynya)
+	if err != nil {
+		Category = 0
+	}
+	Page, err := strconv.Atoi(pagenya)
+	if err != nil {
+		Page = 0
+	}
+
+	Limit, err := strconv.Atoi(limitnya)
+	if err != nil {
+		Limit = 0
+	}
+
+	articles, err := handler.articleService.GetAll(int(Category), int(Page), int(Limit))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"errors": err,

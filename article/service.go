@@ -1,7 +1,7 @@
 package article
 
 type Service interface {
-	GetAll() ([]Article, error)
+	GetAll(Category int, Page int, Limit int) ([]Article, error)
 	GetById(ID int) (Article, error)
 	Create(articleReq ArticleRequest) (Article, error)
 	Update(ID int, articleReq ArticleUpdateRequest) (Article, error)
@@ -16,8 +16,8 @@ func NewService(repo ArticleRepo) *service {
 	return &service{repo}
 }
 
-func (s *service) GetAll() ([]Article, error) {
-	articles, err := s.repository.GetAll()
+func (s *service) GetAll(Category int, Page int, Limit int) ([]Article, error) {
+	articles, err := s.repository.GetAll(Category, Page, Limit)
 	return articles, err
 }
 
