@@ -87,14 +87,33 @@ func (handler *articleHandler) ArticleByID(c *gin.Context) {
 func (handler *articleHandler) ArticleStore(c *gin.Context) {
 
 	Title := c.PostForm("Title")
+	if Title == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "'Title' field is required",
+		})
+		return
+	}
+
 	Content := c.PostForm("Content")
+	if Content == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "'Content' field is required",
+		})
+		return
+	}
+
 	CategoryID := c.PostForm("CategoryID")
+	if CategoryID == "" {
+		CategoryID = "0"
+	}
+
 	categoryID, err := strconv.Atoi(CategoryID)
 	if err != nil {
 		categoryID = 0
 		fmt.Println(err)
 		return
 	}
+
 	Filename := ""
 	Media, err := c.FormFile("Media")
 	if err == nil {
@@ -193,7 +212,8 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 		}
 		Filename = fmt.Sprintf("%s/%s", c.Request.Host, Filename)
 		if cst.Media != "" {
-			err := os.Remove(cst.Media)
+			pathimg := strings.Replace(cst.Media, c.Request.Host, ".", -1)
+			err := os.Remove(pathimg)
 			if err != nil {
 				fmt.Println("Error deleting file:", err)
 			}
@@ -239,10 +259,16 @@ func (handler *articleHandler) ArticleDelete(c *gin.Context) {
 		})
 	} else {
 		if cst.Media != "" {
-			err := os.Remove(cst.Media)
+			pathimg := strings.Replace(cst.Media, c.Request.Host, ".", -1)
+			err := os.Remove(pathimg)
 			if err != nil {
-				fmt.Println("Error deleting file:", err)
+
+				c.JSON(http.StatusBadRequest, gin.H{
+					"status": false,
+					"errors": err,
+				})
 				return
+
 			}
 		}
 		cst, err := handler.articleService.Delete(int(id))

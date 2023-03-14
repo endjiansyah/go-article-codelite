@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go-article-codelite/article"
 	"go-article-codelite/category"
 	"go-article-codelite/handler"
@@ -12,8 +13,11 @@ import (
 )
 
 func main() {
+	// dsn := "host=containers-us-west-159.railway.app user=postgres password=2VRDyw1Xr6zzxPrdNMYz dbname=railway port=5991 sslmode=disable"
+
 	dsn := "host=localhost user=postgres password=postgres dbname=goarticle-codelite port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	fmt.Println(postgres.Open(dsn))
 	if err != nil {
 		log.Fatal("gagal nyambung DB")
 	}
