@@ -193,6 +193,7 @@ func (handler *articleHandler) MediaByID(c *gin.Context) {
 	})
 
 }
+
 func (handler *articleHandler) MediaUpdate(c *gin.Context) {
 	idnya := c.Param("id")
 	id, _ := strconv.Atoi(idnya)
@@ -259,6 +260,49 @@ func (handler *articleHandler) MediaUpdate(c *gin.Context) {
 		"status":  true,
 		"message": "Data tersimpan",
 		"data":    media,
+	})
+
+}
+
+func (handler *articleHandler) MediaDelete(c *gin.Context) {
+	idnya := c.Param("id")
+	id, _ := strconv.Atoi(idnya)
+
+	med, err := handler.articleService.GetMediaId(int(id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": false,
+			"errors": err,
+		})
+		return
+	}
+	if med.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  false,
+			"message": "data not found",
+		})
+		return
+	}
+
+	pathimg := strings.Replace(med.Media, c.Request.Host, ".", -1)
+	errdel := os.Remove(pathimg)
+	if errdel != nil {
+		fmt.Println("Error deleting file:", err)
+	}
+
+	delmedia, err := handler.articleService.DeleteMedia(int(id))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"errors": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  true,
+		"message": "Data tersimpan",
+		"data":    delmedia,
 	})
 
 }

@@ -42,12 +42,14 @@ func main() {
 
 	router.GET("/article", articleHandler.ListArticle)
 	router.GET("/article/:id", articleHandler.ArticleByID)
-	router.POST("/article/:id/media", articleHandler.ArticleMediaCreate)
-	router.GET("/media/:id", articleHandler.MediaByID)
-	router.PUT("/media/:id", articleHandler.MediaUpdate)
 	router.POST("/article", articleHandler.ArticleStore)
 	router.PUT("/article/:id", articleHandler.ArticleUpdate)
 	router.DELETE("/article/:id", articleHandler.ArticleDelete)
+
+	router.POST("/article/:id/media", articleHandler.ArticleMediaCreate)
+	router.GET("/media/:id", articleHandler.MediaByID)
+	router.PUT("/media/:id", articleHandler.MediaUpdate)
+	router.DELETE("/media/:id", articleHandler.MediaDelete)
 	router.Static("/uploads/", "./uploads")
 	router.Run()
 }
