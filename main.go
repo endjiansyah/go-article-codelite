@@ -42,7 +42,7 @@ func main() {
 
 	router.GET("/article", articleHandler.ListArticle)
 	router.GET("/article/:id", articleHandler.ArticleByID)
-	router.GET("/media", articleHandler.MediaByID)
+	router.GET("/media/:id", articleHandler.MediaByID)
 	router.POST("/article", articleHandler.ArticleStore)
 	router.PUT("/article/:id", articleHandler.ArticleUpdate)
 	router.DELETE("/article/:id", articleHandler.ArticleDelete)
