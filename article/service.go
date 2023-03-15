@@ -3,7 +3,9 @@ package article
 type Service interface {
 	GetAll(Category int, Page int, Limit int) ([]Article, error)
 	GetById(ID int) (Article, error)
+	GetMediaById(ID int) ([]Media, error)
 	Create(articleReq ArticleRequest) (Article, error)
+	CreateMedia(mediaReq MediapostRequest) (Media, error)
 	Update(ID int, articleReq ArticleUpdateRequest) (Article, error)
 	Delete(ID int) (Article, error)
 }
@@ -26,16 +28,29 @@ func (s *service) GetById(ID int) (Article, error) {
 	return article, err
 }
 
+func (s *service) GetMediaById(ID int) ([]Media, error) {
+	media, err := s.repository.GetMediaById(ID)
+	return media, err
+}
 func (s *service) Create(articleReq ArticleRequest) (Article, error) {
 
 	payload := Article{
 		Title:      articleReq.Title,
 		Content:    articleReq.Content,
-		Media:      articleReq.Media,
 		Author:     articleReq.Author,
 		CategoryID: articleReq.CategoryID,
 	}
 	article, err := s.repository.Create(payload)
+	return article, err
+}
+func (s *service) CreateMedia(mediaReq MediapostRequest) (Media, error) {
+
+	payload := Media{
+		Media:     mediaReq.Media,
+		Type:      mediaReq.Type,
+		ArticleID: mediaReq.ArticleID,
+	}
+	article, err := s.repository.CreateMedia(payload)
 	return article, err
 }
 
@@ -48,9 +63,9 @@ func (s *service) Update(ID int, articleReq ArticleUpdateRequest) (Article, erro
 	if articleReq.Content != "" {
 		cst.Content = articleReq.Content
 	}
-	if articleReq.Media != "" {
-		cst.Media = articleReq.Media
-	}
+	// if articleReq.Media != "" {
+	// 	cst.Media = articleReq.Media
+	// }
 	if articleReq.Author != "" {
 		cst.Author = articleReq.Author
 	}

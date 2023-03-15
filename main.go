@@ -23,6 +23,7 @@ func main() {
 
 	db.AutoMigrate(&category.Category{})
 	db.AutoMigrate(&article.Article{})
+	db.AutoMigrate(&article.Media{})
 
 	categoryRepo := category.NewRepository(db)
 	categoryService := category.NewService(categoryRepo)

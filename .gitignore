@@ -2,3 +2,4 @@
 fly.toml
 go-article-codelite.exe
 .dockerignore
+package-lock.json
