@@ -8,6 +8,7 @@ type Service interface {
 	CreateMedia(mediaReq MediapostRequest) (Media, error)
 	Update(ID int, articleReq ArticleUpdateRequest) (Article, error)
 	Delete(ID int) (Article, error)
+	DeleteMedia(ID int) (Media, error)
 }
 
 type service struct {
@@ -81,4 +82,11 @@ func (s *service) Delete(ID int) (Article, error) {
 
 	article, err := s.repository.Delete(cst)
 	return article, err
+}
+
+func (s *service) DeleteMedia(ID int) (Media, error) {
+	cst, _ := s.repository.GetMediaId(ID)
+
+	media, err := s.repository.DeleteMedia(cst)
+	return media, err
 }

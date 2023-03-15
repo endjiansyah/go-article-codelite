@@ -7,11 +7,13 @@ import (
 type ArticleRepo interface {
 	GetAll(Category int, Page int, Limit int) ([]Article, error)
 	GetById(ID int) (Article, error)
+	GetMediaId(ID int) (Media, error)
 	GetMediaById(ID int) ([]Media, error)
 	Create(article Article) (Article, error)
 	CreateMedia(media Media) (Media, error)
 	Update(article Article) (Article, error)
 	Delete(article Article) (Article, error)
+	DeleteMedia(media Media) (Media, error)
 }
 
 type repository struct {
@@ -48,6 +50,13 @@ func (repo *repository) GetById(ID int) (Article, error) {
 	return article, err
 }
 
+func (repo *repository) GetMediaId(ID int) (Media, error) {
+	var media Media
+
+	err := repo.db.Find(&media, ID).Error
+	return media, err
+}
+
 func (repo *repository) GetMediaById(ID int) ([]Media, error) {
 	var media []Media
 
@@ -73,4 +82,9 @@ func (repo *repository) Update(article Article) (Article, error) {
 func (repo *repository) Delete(article Article) (Article, error) {
 	err := repo.db.Delete(&article).Error
 	return article, err
+}
+
+func (repo *repository) DeleteMedia(media Media) (Media, error) {
+	err := repo.db.Delete(&media).Error
+	return media, err
 }

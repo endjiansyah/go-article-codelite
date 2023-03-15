@@ -5,6 +5,7 @@ import (
 	"go-article-codelite/article"
 	"math/rand"
 	"net/http"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -77,10 +78,10 @@ func (handler *articleHandler) ArticleByID(c *gin.Context) {
 		})
 		return
 	}
-	med, _ := handler.articleService.GetMediaById(int(id))
 
 	articleResponse := responseArticle(art)
 
+	med, _ := handler.articleService.GetMediaById(int(id))
 	var mediaResponses []article.MediaResponse
 	for _, cst := range med {
 		mediaresponse := responseMedia(cst)
@@ -190,6 +191,7 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 			Succuploadcount++
 		}
 	}
+	// ---------endmedia-------
 
 	articleResponse := responseArticle(articlecreate)
 
@@ -231,42 +233,6 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 	if err != nil {
 		categoryID = 0
 	}
-	// Filename := ""
-
-	// Media, errmedia := c.FormFile("Media")
-	// if errmedia == nil {
-	// 	mimetype := Media.Header.Get("Content-Type")
-	// 	mime := strings.Split(mimetype, "/")
-
-	// 	if mime[0] != "image" && mime[0] != "video" && mime[0] != "audio" {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "your uploaded file is " + mime[0] + ", the allowed file is audio, video,& image",
-	// 		})
-	// 		return
-	// 	}
-
-	// 	rand.Seed(time.Now().UnixNano())
-	// 	randNum := rand.Intn(100000)
-	// 	fileName := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
-
-	// 	Filename = fmt.Sprintf("uploads/%s/codelite_%s", mime[0], fileName)
-	// 	if err := c.SaveUploadedFile(Media, Filename); err != nil {
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"error": "Failed to save media",
-	// 		})
-	// 		return
-	// 	}
-	// 	Filename = fmt.Sprintf("%s/%s", c.Request.Host, Filename)
-	// 	if cst.Media != "" {
-	// 		pathimg := strings.Replace(cst.Media, c.Request.Host, ".", -1)
-	// 		err := os.Remove(pathimg)
-	// 		if err != nil {
-	// 			fmt.Println("Error deleting file:", err)
-	// 		}
-	// 	}
-
-	// }
-
 	articleRequest := article.ArticleUpdateRequest{Title: Title, Content: Content, Author: Author, CategoryID: int(categoryID)}
 
 	article, err := handler.articleService.Update(id, articleRequest)
@@ -306,19 +272,16 @@ func (handler *articleHandler) ArticleDelete(c *gin.Context) {
 		})
 		return
 	}
-	// if cst.Media != "" {
-	// 	pathimg := strings.Replace(cst.Media, c.Request.Host, ".", -1)
-	// 	err := os.Remove(pathimg)
-	// 	if err != nil {
+	med, _ := handler.articleService.GetMediaById(int(id))
+	var mediaResponses []article.MediaResponse
+	for _, mdia := range med {
+		mediaresponse := responseMedia(mdia)
+		pathimg := strings.Replace(mdia.Media, c.Request.Host, ".", -1)
+		os.Remove(pathimg)
+		handler.articleService.DeleteMedia(int(mediaresponse.ID))
+		mediaResponses = append(mediaResponses, mediaresponse)
+	}
 
-	// 		c.JSON(http.StatusBadRequest, gin.H{
-	// 			"status": false,
-	// 			"errors": err,
-	// 		})
-	// 		return
-
-	// 	}
-	// }
 	artdel, err := handler.articleService.Delete(int(id))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -330,8 +293,9 @@ func (handler *articleHandler) ArticleDelete(c *gin.Context) {
 	articleResponse := responseArticle(artdel)
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Hapus Article",
+		"message": "Delete Article & Media with id : " + idnya,
 		"data":    articleResponse,
+		"media":   mediaResponses,
 	})
 
 }
