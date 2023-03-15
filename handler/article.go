@@ -463,7 +463,7 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Delete Media with id : ",
+		"message": "Success update Article with id : " + idnya,
 		"data":    article,
 	})
 
