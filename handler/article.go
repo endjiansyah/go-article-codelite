@@ -124,13 +124,18 @@ func (handler *articleHandler) ArticleMediaCreate(c *gin.Context) {
 	Media, err := c.FormFile("Media")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": err,
+			"error": "Input Image, Audio, or Video",
 		})
 		return
 	}
 	mimetype := Media.Header.Get("Content-Type")
 	mime := strings.Split(mimetype, "/")
-
+	if mime[0] == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Input Image, Audio, or Video",
+		})
+		return
+	}
 	if mime[0] != "image" && mime[0] != "video" && mime[0] != "audio" {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "your uploaded file is " + mime[0] + ", the allowed file is audio, video,& image",
@@ -162,7 +167,7 @@ func (handler *articleHandler) ArticleMediaCreate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Data tersimpan",
+		"message": "success save media",
 		"data":    media,
 	})
 
@@ -263,7 +268,7 @@ func (handler *articleHandler) MediaUpdate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Data tersimpan",
+		"message": "Update media with id : " + idnya,
 		"data":    media,
 	})
 
@@ -306,7 +311,7 @@ func (handler *articleHandler) MediaDelete(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Data tersimpan",
+		"message": "Delete Media with id : " + idnya,
 		"data":    delmedia,
 	})
 
@@ -433,7 +438,7 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 	if cst.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  false,
-			"message": "data tidak ditemukan",
+			"message": "data not found",
 		})
 		return
 	}
@@ -458,7 +463,7 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Data tersimpan",
+		"message": "Delete Media with id : ",
 		"data":    article,
 	})
 
@@ -480,7 +485,7 @@ func (handler *articleHandler) ArticleDelete(c *gin.Context) {
 	if cst.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  false,
-			"message": "data tidak ditemukan",
+			"message": "data not fond",
 		})
 		return
 	}

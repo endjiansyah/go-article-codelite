@@ -69,7 +69,7 @@ func (handler *categoryHandler) CategoryStore(c *gin.Context) {
 
 		listpesaneror := []string{}
 		for _, e := range err.(validator.ValidationErrors) {
-			pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
+			pesaneror := fmt.Sprintf("error on %s, because %s", e.Field(), e.ActualTag())
 			listpesaneror = append(listpesaneror, pesaneror)
 		}
 
@@ -89,7 +89,7 @@ func (handler *categoryHandler) CategoryStore(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  true,
-		"message": "Data tersimpan",
+		"message": "success save data",
 		"data":    category,
 	})
 }
@@ -109,7 +109,7 @@ func (handler *categoryHandler) CategoryUpdate(c *gin.Context) {
 	} else if cst.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  false,
-			"message": "data tidak ditemukan",
+			"message": "data not found",
 		})
 	} else {
 
@@ -120,7 +120,7 @@ func (handler *categoryHandler) CategoryUpdate(c *gin.Context) {
 
 			listpesaneror := []string{}
 			for _, e := range err.(validator.ValidationErrors) {
-				pesaneror := fmt.Sprintf("error di %s, karena %s", e.Field(), e.ActualTag())
+				pesaneror := fmt.Sprintf("error on %s, because %s", e.Field(), e.ActualTag())
 				listpesaneror = append(listpesaneror, pesaneror)
 			}
 
@@ -141,7 +141,7 @@ func (handler *categoryHandler) CategoryUpdate(c *gin.Context) {
 
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
-			"message": "Data tersimpan",
+			"message": "success save data",
 			"data":    category,
 		})
 	}
@@ -163,7 +163,7 @@ func (handler *categoryHandler) CategoryDelete(c *gin.Context) {
 	} else if cst.ID == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  false,
-			"message": "data tidak ditemukan",
+			"message": "data not found",
 		})
 	} else {
 		cst, err := handler.categoryService.Delete(int(id))
@@ -177,7 +177,7 @@ func (handler *categoryHandler) CategoryDelete(c *gin.Context) {
 		categoryResponse := responseCategory(cst)
 		c.JSON(http.StatusOK, gin.H{
 			"status":  true,
-			"message": "Hapus Category",
+			"message": "success delete category",
 			"data":    categoryResponse,
 		})
 	}
