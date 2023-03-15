@@ -8,6 +8,7 @@ type Article struct {
 	Media      string
 	Content    string
 	CategoryID int
+	Author     string
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }

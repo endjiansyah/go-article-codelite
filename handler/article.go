@@ -102,6 +102,14 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 		return
 	}
 
+	Author := c.PostForm("Author")
+	if Author == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "'Author' field is required",
+		})
+		return
+	}
+
 	CategoryID := c.PostForm("CategoryID")
 	if CategoryID == "" {
 		CategoryID = "0"
@@ -110,7 +118,12 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 	categoryID, err := strconv.Atoi(CategoryID)
 	if err != nil {
 		categoryID = 0
-		fmt.Println(err)
+	}
+
+	if categoryID <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "'CategoryID' field is required & must be integer",
+		})
 		return
 	}
 
@@ -141,7 +154,7 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 
 	}
 
-	articleRequest := article.ArticleRequest{Title: Title, Media: Filename, Content: Content, CategoryID: int(categoryID)}
+	articleRequest := article.ArticleRequest{Title: Title, Media: Filename, Content: Content, Author: Author, CategoryID: int(categoryID)}
 	article, err := handler.articleService.Create(articleRequest)
 
 	if err != nil {
@@ -180,6 +193,7 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 	}
 	Title := c.PostForm("Title")
 	Content := c.PostForm("Content")
+	Author := c.PostForm("Author")
 	CategoryID := c.PostForm("CategoryID")
 	categoryID, err := strconv.Atoi(CategoryID)
 	if err != nil {
@@ -221,7 +235,7 @@ func (handler *articleHandler) ArticleUpdate(c *gin.Context) {
 
 	}
 
-	articleRequest := article.ArticleUpdateRequest{Title: Title, Media: Filename, Content: Content, CategoryID: int(categoryID)}
+	articleRequest := article.ArticleUpdateRequest{Title: Title, Media: Filename, Content: Content, Author: Author, CategoryID: int(categoryID)}
 
 	article, err := handler.articleService.Update(id, articleRequest)
 
@@ -293,6 +307,7 @@ func responseArticle(cst article.Article) article.ArticleResponse {
 		ID:         cst.ID,
 		Title:      cst.Title,
 		Content:    cst.Content,
+		Author:     cst.Author,
 		Media:      cst.Media,
 		CategoryID: cst.CategoryID,
 		CreatedAt:  cst.CreatedAt,

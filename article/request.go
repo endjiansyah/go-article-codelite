@@ -5,6 +5,7 @@ type ArticleRequest struct {
 	Content    string `binding:"required"`
 	Media      string
 	CategoryID int
+	Author     string `binding:"required"`
 }
 
 type ArticleUpdateRequest struct {
@@ -12,4 +13,5 @@ type ArticleUpdateRequest struct {
 	Content    string
 	Media      string
 	CategoryID int
+	Author     string
 }

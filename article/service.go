@@ -32,6 +32,7 @@ func (s *service) Create(articleReq ArticleRequest) (Article, error) {
 		Title:      articleReq.Title,
 		Content:    articleReq.Content,
 		Media:      articleReq.Media,
+		Author:     articleReq.Author,
 		CategoryID: articleReq.CategoryID,
 	}
 	article, err := s.repository.Create(payload)
@@ -49,6 +50,9 @@ func (s *service) Update(ID int, articleReq ArticleUpdateRequest) (Article, erro
 	}
 	if articleReq.Media != "" {
 		cst.Media = articleReq.Media
+	}
+	if articleReq.Author != "" {
+		cst.Author = articleReq.Author
 	}
 	if articleReq.CategoryID != 0 {
 		cst.CategoryID = articleReq.CategoryID

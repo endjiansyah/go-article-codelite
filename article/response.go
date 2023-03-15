@@ -7,6 +7,7 @@ type ArticleResponse struct {
 	Title      string `json:"title"`
 	Content    string `json:"content"`
 	Media      string `json:"media"`
+	Author     string `json:"author"`
 	CategoryID int
 	CreatedAt  time.Time `json:"created_at"`
 	UpdatedAt  time.Time `json:"updated_at"`
