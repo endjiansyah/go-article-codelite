@@ -122,30 +122,35 @@ func (handler *articleHandler) ArticleMediaCreate(c *gin.Context) {
 	var Filename string
 	var Mimetype string
 	Media, err := c.FormFile("Media")
-	if err == nil {
-		mimetype := Media.Header.Get("Content-Type")
-		mime := strings.Split(mimetype, "/")
-
-		if mime[0] != "image" && mime[0] != "video" && mime[0] != "audio" {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "your uploaded file is " + mime[0] + ", the allowed file is audio, video,& image",
-			})
-			return
-		}
-
-		rand.Seed(time.Now().UnixNano())
-		randNum := rand.Intn(100000)
-		randomname := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
-		filename := fmt.Sprintf("uploads/%s/codelite_%s", mime[0], randomname)
-		if err := c.SaveUploadedFile(Media, filename); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{
-				"error": "Failed to save media",
-			})
-			return
-		}
-		Filename = fmt.Sprintf("%s/%s", c.Request.Host, filename)
-		Mimetype = mime[0]
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err,
+		})
+		return
 	}
+	mimetype := Media.Header.Get("Content-Type")
+	mime := strings.Split(mimetype, "/")
+
+	if mime[0] != "image" && mime[0] != "video" && mime[0] != "audio" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "your uploaded file is " + mime[0] + ", the allowed file is audio, video,& image",
+		})
+		return
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	randNum := rand.Intn(100000)
+	randomname := strconv.Itoa(randNum) + filepath.Ext(Media.Filename)
+	filename := fmt.Sprintf("uploads/%s/codelite_%s", mime[0], randomname)
+	if err := c.SaveUploadedFile(Media, filename); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to save media",
+		})
+		return
+	}
+	Filename = fmt.Sprintf("%s/%s", c.Request.Host, filename)
+	Mimetype = mime[0]
+
 	mediaRequest := article.MediapostRequest{Media: Filename, Type: Mimetype, ArticleID: int(id)}
 	media, err := handler.articleService.CreateMedia(mediaRequest)
 	if err != nil {

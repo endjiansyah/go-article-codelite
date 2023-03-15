@@ -50,6 +50,7 @@ func main() {
 	router.GET("/media/:id", articleHandler.MediaByID)
 	router.PUT("/media/:id", articleHandler.MediaUpdate)
 	router.DELETE("/media/:id", articleHandler.MediaDelete)
+
 	router.Static("/uploads/", "./uploads")
 	router.Run()
 }
