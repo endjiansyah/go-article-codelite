@@ -8,6 +8,7 @@ type Service interface {
 	Create(articleReq ArticleRequest) (Article, error)
 	CreateMedia(mediaReq MediapostRequest) (Media, error)
 	Update(ID int, articleReq ArticleUpdateRequest) (Article, error)
+	UpdateMedia(ID int, mediaReq MediapostRequest) (Media, error)
 	Delete(ID int) (Article, error)
 	DeleteMedia(ID int) (Media, error)
 }
@@ -62,6 +63,23 @@ func (s *service) CreateMedia(mediaReq MediapostRequest) (Media, error) {
 	return article, err
 }
 
+func (s *service) UpdateMedia(ID int, mediaReq MediapostRequest) (Media, error) {
+	cst, _ := s.repository.GetMediaId(ID)
+
+	if mediaReq.Media != "" {
+		cst.Media = mediaReq.Media
+	}
+	if mediaReq.Type != "" {
+		cst.Type = mediaReq.Type
+	}
+
+	if mediaReq.ArticleID != 0 {
+		cst.ArticleID = mediaReq.ArticleID
+	}
+	media, err := s.repository.UpdateMedia(cst)
+	return media, err
+}
+
 func (s *service) Update(ID int, articleReq ArticleUpdateRequest) (Article, error) {
 	cst, _ := s.repository.GetById(ID)
 
@@ -71,9 +89,7 @@ func (s *service) Update(ID int, articleReq ArticleUpdateRequest) (Article, erro
 	if articleReq.Content != "" {
 		cst.Content = articleReq.Content
 	}
-	// if articleReq.Media != "" {
-	// 	cst.Media = articleReq.Media
-	// }
+
 	if articleReq.Author != "" {
 		cst.Author = articleReq.Author
 	}

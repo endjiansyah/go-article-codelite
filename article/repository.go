@@ -12,6 +12,7 @@ type ArticleRepo interface {
 	Create(article Article) (Article, error)
 	CreateMedia(media Media) (Media, error)
 	Update(article Article) (Article, error)
+	UpdateMedia(media Media) (Media, error)
 	Delete(article Article) (Article, error)
 	DeleteMedia(media Media) (Media, error)
 }
@@ -77,6 +78,11 @@ func (repo *repository) CreateMedia(media Media) (Media, error) {
 func (repo *repository) Update(article Article) (Article, error) {
 	err := repo.db.Save(&article).Error
 	return article, err
+}
+
+func (repo *repository) UpdateMedia(media Media) (Media, error) {
+	err := repo.db.Save(&media).Error
+	return media, err
 }
 
 func (repo *repository) Delete(article Article) (Article, error) {
