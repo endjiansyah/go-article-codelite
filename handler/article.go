@@ -100,6 +100,37 @@ func (handler *articleHandler) ArticleByID(c *gin.Context) {
 
 }
 
+func (handler *articleHandler) MediaByID(c *gin.Context) {
+	idnya := c.Param("id")
+	id, _ := strconv.Atoi(idnya)
+
+	med, err := handler.articleService.GetMediaId(int(id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": false,
+			"errors": err,
+		})
+		return
+	}
+	if med.ID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  false,
+			"message": "data not found",
+		})
+		return
+	}
+
+	mediaResponse := responseMedia(med)
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  true,
+		"message": "Media with ID : " + c.Param("id"),
+		"data":    mediaResponse,
+	})
+
+}
+
 func (handler *articleHandler) ArticleStore(c *gin.Context) {
 
 	Title := c.PostForm("Title")

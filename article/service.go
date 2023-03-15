@@ -4,6 +4,7 @@ type Service interface {
 	GetAll(Category int, Page int, Limit int) ([]Article, error)
 	GetById(ID int) (Article, error)
 	GetMediaById(ID int) ([]Media, error)
+	GetMediaId(ID int) (Media, error)
 	Create(articleReq ArticleRequest) (Article, error)
 	CreateMedia(mediaReq MediapostRequest) (Media, error)
 	Update(ID int, articleReq ArticleUpdateRequest) (Article, error)
@@ -33,6 +34,12 @@ func (s *service) GetMediaById(ID int) ([]Media, error) {
 	media, err := s.repository.GetMediaById(ID)
 	return media, err
 }
+
+func (s *service) GetMediaId(ID int) (Media, error) {
+	media, err := s.repository.GetMediaId(ID)
+	return media, err
+}
+
 func (s *service) Create(articleReq ArticleRequest) (Article, error) {
 
 	payload := Article{
