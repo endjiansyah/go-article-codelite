@@ -414,7 +414,7 @@ func (handler *articleHandler) ArticleStore(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":               true,
-		"message":              "Data tersimpan",
+		"message":              "Success Save Data",
 		"data":                 articleResponse,
 		"media":                mediaResponses,
 		"media_upload_success": Succuploadcount,
