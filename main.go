@@ -8,13 +8,21 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 func main() {
-
-	dsn := "host=localhost user=postgres password=postgres dbname=goarticle-codelite port=5432 sslmode=disable"
+	// Mengatur konfigurasi Viper
+	viper.SetConfigType("yaml")
+	viper.SetConfigName(".env")
+	viper.AddConfigPath(".")
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println("Error reading config file")
+	}
+	dsn := viper.GetString("DB.HOST")
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	fmt.Println(postgres.Open(dsn))
 	if err != nil {
